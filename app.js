@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
@@ -28,6 +29,19 @@ const {
   PORT = 3000,
   DATABASE_URL = 'mongodb://127.0.0.1:27017/news-explorer',
 } = process.env;
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://tito-wtwr.crabdance.com',
+  'https://www.tito-wtwr.crabdance.com',
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+  }),
+);
 
 app.use(helmet());
 app.use(requestLogger);
