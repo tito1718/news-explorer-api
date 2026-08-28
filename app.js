@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes');
+const errorHandler = require('./middlewares/error-handler');
+const { NotFoundError } = require('./errors');
 
 const app = express();
 
@@ -15,9 +17,11 @@ app.use(express.json());
 
 app.use('/', routes);
 
-app.use((req, res) => {
-  res.status(404).send({ message: 'Requested resource not found' });
+app.use((_req, _res, next) => {
+  next(new NotFoundError());
 });
+
+app.use(errorHandler);
 
 mongoose
   .connect(DATABASE_URL)

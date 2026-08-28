@@ -1,17 +1,17 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const {
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+  ConflictError,
+} = require('../errors');
 
 const { JWT_SECRET = 'development-secret' } = process.env;
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, email, password } = req.body;
-
-  if (!name || !email || !password) {
-    return res.status(400).send({
-      message: 'Name, email, and password are required',
-    });
-  }
 
   return bcrypt
     .hash(password, 10)
@@ -27,31 +27,21 @@ const createUser = (req, res) => {
     }))
     .catch((error) => {
       if (error.code === 11000) {
-        return res.status(409).send({
-          message: 'An account with this email already exists',
-        });
+        return next(
+          new ConflictError('An account with this email already exists'),
+        );
       }
 
       if (error.name === 'ValidationError') {
-        return res.status(400).send({
-          message: 'Invalid registration data',
-        });
+        return next(new BadRequestError('Invalid registration data'));
       }
 
-      return res.status(500).send({
-        message: 'An error occurred on the server',
-      });
+      return next(error);
     });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).send({
-      message: 'Email and password are required',
-    });
-  }
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -59,17 +49,13 @@ const login = (req, res) => {
 
       return res.send({ token });
     })
-    .catch(() => res.status(401).send({
-      message: 'Incorrect email or password',
-    }));
+    .catch(() => next(new UnauthorizedError('Incorrect email or password')));
 };
 
-const getCurrentUser = (req, res) => User.findById(req.user._id)
+const getCurrentUser = (req, res, next) => User.findById(req.user._id)
   .then((user) => {
     if (!user) {
-      return res.status(404).send({
-        message: 'User not found',
-      });
+      return next(new NotFoundError('User not found'));
     }
 
     return res.send({
@@ -78,9 +64,7 @@ const getCurrentUser = (req, res) => User.findById(req.user._id)
       email: user.email,
     });
   })
-  .catch(() => res.status(500).send({
-    message: 'An error occurred on the server',
-  }));
+  .catch(next);
 
 module.exports = {
   createUser,

@@ -1,12 +1,11 @@
 const Article = require('../models/article');
+const { BadRequestError, ForbiddenError, NotFoundError } = require('../errors');
 
-const getArticles = (req, res) => Article.find({ owner: req.user._id })
+const getArticles = (req, res, next) => Article.find({ owner: req.user._id })
   .then((articles) => res.send(articles))
-  .catch(() => res.status(500).send({
-    message: 'An error occurred on the server',
-  }));
+  .catch(next);
 
-const createArticle = (req, res) => {
+const createArticle = (req, res, next) => {
   const {
     keyword, title, text, date, source, link, image,
   } = req.body;
@@ -24,46 +23,36 @@ const createArticle = (req, res) => {
     .then((article) => res.status(201).send(article))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        return res.status(400).send({
-          message: 'Invalid article data',
-        });
+        return next(new BadRequestError('Invalid article data'));
       }
 
-      return res.status(500).send({
-        message: 'An error occurred on the server',
-      });
+      return next(error);
     });
 };
 
-const deleteArticle = (req, res) => {
+const deleteArticle = (req, res, next) => {
   const { articleId } = req.params;
 
   return Article.findById(articleId)
     .then((article) => {
       if (!article) {
-        return res.status(404).send({
-          message: 'Article not found',
-        });
+        return next(new NotFoundError('Article not found'));
       }
 
       if (article.owner.toString() !== req.user._id) {
-        return res.status(403).send({
-          message: 'You cannot delete another user’s article',
-        });
+        return next(
+          new ForbiddenError('You cannot delete another user’s article'),
+        );
       }
 
       return article.deleteOne().then(() => res.send(article));
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        return res.status(400).send({
-          message: 'Invalid article ID',
-        });
+        return next(new BadRequestError('Invalid article ID'));
       }
 
-      return res.status(500).send({
-        message: 'An error occurred on the server',
-      });
+      return next(error);
     });
 };
 
