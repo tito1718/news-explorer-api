@@ -2,12 +2,12 @@
 
 REST API for the NewsExplorer full-stack application. It provides authentication, saved-article storage, validation, error handling, logging, and production security.
 
-## Live Links
+## Project links
 
-- API: https://api.tito-wtwr.crabdance.com/news-explorer
-- Frontend: https://tito-wtwr.crabdance.com/news-explorer/
-- Repository: https://github.com/tito1718/news-explorer-api
-- Development branch: `stage-2-backend-api`
+- **API:** [NewsExplorer API](https://api.tito-wtwr.crabdance.com/news-explorer)
+- **Frontend:** [NewsExplorer](https://newsexplorer.pages.dev)
+- **Repository:** [news-explorer-api](https://github.com/tito1718/news-explorer-api)
+- **Development branch:** `stage-3-integration-api`
 
 ## Features
 
@@ -21,6 +21,7 @@ REST API for the NewsExplorer full-stack application. It provides authentication
 - Request validation with Celebrate and Joi
 - Centralized error handling
 - Request and error logging
+- CORS restrictions for approved frontend origins
 - Helmet security headers
 - API rate limiting
 - MongoDB data storage
@@ -39,6 +40,7 @@ REST API for the NewsExplorer full-stack application. It provides authentication
 - bcryptjs
 - Celebrate and Joi
 - Validator
+- CORS
 - Helmet
 - Express Rate Limit
 - Winston
@@ -50,82 +52,74 @@ REST API for the NewsExplorer full-stack application. It provides authentication
 - Google Cloud
 - Let’s Encrypt
 
-## API Routes
+## API routes
 
 Protected routes require an authorization header containing `Bearer <token>`.
 
-- `POST /signup`
-  - Access: Public
-  - Registers a new user
+### Public routes
 
+- `POST /signup`
+  - Registers a new user
 - `POST /signin`
-  - Access: Public
   - Signs in a user and returns a JWT
 
+### Protected routes
+
 - `GET /users/me`
-  - Access: Protected
   - Returns the authenticated user
-
 - `GET /articles`
-  - Access: Protected
   - Returns the authenticated user’s saved articles
-
 - `POST /articles`
-  - Access: Protected
   - Saves a new article
-
 - `DELETE /articles/:articleId`
-  - Access: Protected
   - Deletes an article owned by the authenticated user
 
 For deployed requests, add the route to the production base URL.
 
 Example:
 
-`https://api.tito-wtwr.crabdance.com/news-explorer/signin`
+```text
+https://api.tito-wtwr.crabdance.com/news-explorer/signin
+```
 
-## Request Examples
+## Request examples
 
-### Register a User
+### Register a user
 
-- Name: `Example User`
-- Email: `user@example.com`
-- Password: `securepassword`
+```json
+{
+  "name": "Example User",
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
 
-Example JSON:
+### Sign in
 
-    {
-      "name": "Example User",
-      "email": "user@example.com",
-      "password": "securepassword"
-    }
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
 
-### Sign In
+### Save an article
 
-Example JSON:
-
-    {
-      "email": "user@example.com",
-      "password": "securepassword"
-    }
-
-### Save an Article
-
-Example JSON:
-
-    {
-      "keyword": "technology",
-      "title": "Example Article",
-      "text": "A short article description.",
-      "date": "2026-08-28",
-      "source": "Example News",
-      "link": "https://example.com/article",
-      "image": "https://example.com/image.jpg"
-    }
+```json
+{
+  "keyword": "technology",
+  "title": "Example Article",
+  "text": "A short article description.",
+  "date": "2026-08-28",
+  "source": "Example News",
+  "link": "https://example.com/article",
+  "image": "https://example.com/image.jpg"
+}
+```
 
 The backend automatically adds the authenticated user’s ID as the article owner.
 
-## Response Status Codes
+## Response status codes
 
 - `200` — Request completed successfully
 - `201` — Resource created successfully
@@ -139,16 +133,48 @@ The backend automatically adds the authenticated user’s ID as the article owne
 
 Unexpected internal errors receive safe public messages. MongoDB, Node.js, and server details are not exposed to clients.
 
-## Available Scripts
+## Run the project locally
 
-- `npm start`
-  - Starts the API with Node
+### 1. Clone the repository
 
-- `npm run dev`
-  - Starts the API with Nodemon hot reloading
+```bash
+git clone https://github.com/tito1718/news-explorer-api.git
+cd news-explorer-api
+```
 
-- `npm run lint`
-  - Checks the project with ESLint
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env
+PORT=3000
+DATABASE_URL=mongodb://127.0.0.1:27017/news-explorer
+JWT_SECRET=your_jwt_secret
+```
+
+The `.env` file is ignored by Git and must not be committed.
+
+### 4. Start the API
+
+```bash
+npm run dev
+```
+
+## Available scripts
+
+| Command        | Purpose                                  |
+| -------------- | ---------------------------------------- |
+| `npm start`    | Start the API with Node                  |
+| `npm run dev`  | Start the API with Nodemon hot reloading |
+| `npm run lint` | Check the project with ESLint            |
+
+This repository does not currently define an automated `npm test` script.
 
 ## Validation
 
@@ -167,42 +193,43 @@ Invalid requests are rejected before reaching the database.
 
 ## Security
 
-- Passwords are hashed before storage.
-- Password hashes are excluded from normal responses.
-- JWTs expire after seven days.
-- Secrets are stored in an ignored `.env` file.
-- Helmet adds protective HTTP headers.
-- Rate limiting allows 100 requests per 15-minute window.
-- Users retrieve only their own saved articles.
-- Users cannot delete another user’s articles.
-- Nginx provides HTTPS through Let’s Encrypt.
+- Passwords are hashed before storage
+- Password hashes are excluded from normal responses
+- JWTs expire after seven days
+- Secrets are stored in an ignored `.env` file
+- CORS restricts browser requests to approved frontend origins
+- Helmet adds protective HTTP headers
+- Rate limiting allows 100 requests per 15-minute window
+- Users retrieve only their own saved articles
+- Users cannot delete articles owned by another user
+- Nginx provides HTTPS through Let’s Encrypt
 
 ## Logging
 
-- Normal API activity is stored in `request.log`.
-- Server errors are stored in `error.log`.
-- Passwords are excluded from logs.
-- Request bodies are excluded from logs.
-- Authorization headers are excluded from logs.
-- Both log files are ignored by Git.
+- Normal API activity is stored in `request.log`
+- Server errors are stored in `error.log`
+- Passwords are excluded from logs
+- Request bodies are excluded from logs
+- Authorization headers are excluded from logs
+- Both log files are ignored by Git
 
-## Production Deployment
+## Production deployment
 
 The API is deployed on a Google Cloud VM.
 
 Production request flow:
 
-- The client sends an HTTPS request.
-- Nginx receives the request.
-- Nginx forwards it to the NewsExplorer API on port `3000`.
-- The API communicates with MongoDB.
-- PM2 keeps the API running after terminal sessions close or the application restarts.
+1. The Cloudflare Pages frontend sends an HTTPS request.
+2. Nginx receives the request on the Google Cloud VM.
+3. Nginx forwards it to the NewsExplorer API on port `3000`.
+4. The API communicates with MongoDB.
+5. PM2 keeps the API running after terminal sessions close or the application restarts.
 
 The NewsExplorer backend remains separate from other applications hosted on the same VM.
 
 ## Testing
 
-The API was tested for:
+The API was manually tested for:
 
 - Successful and unsuccessful registration
 - Successful and unsuccessful sign-in
@@ -217,6 +244,7 @@ The API was tested for:
 - Invalid MongoDB IDs
 - Unknown routes
 - Centralized error responses
+- Approved and unapproved CORS origins
 - Security headers
 - Rate limiting
 - Request logging
@@ -225,3 +253,12 @@ The API was tested for:
 - Deployed HTTPS routes
 - ESLint compliance
 - Dependency vulnerabilities
+
+## Author
+
+**Cesar "Tito" Chirino**
+
+Software Engineering graduate of the TripleTen program
+
+- [GitHub](https://github.com/tito1718)
+- [LinkedIn](https://www.linkedin.com/in/cesar-tito-chirino/)
