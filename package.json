@@ -1,0 +1,43 @@
+{
+  "name": "news-explorer-api",
+  "version": "1.0.0",
+  "description": "REST API for the NewsExplorer full-stack application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tito1718/news-explorer-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tito1718/news-explorer-api/issues"
+  },
+  "homepage": "https://github.com/tito1718/news-explorer-api#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "celebrate": "^16.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "express-winston": "^4.2.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.9.4",
+    "validator": "^13.15.35",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.32.0",
+    "nodemon": "^3.1.14"
+  }
+}
