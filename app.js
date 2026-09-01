@@ -36,6 +36,7 @@ const allowedOrigins = [
   'https://tito-wtwr.crabdance.com',
   'https://www.tito-wtwr.crabdance.com',
   'https://newsexplorer.pages.dev',
+  'https://newsexplorer.ldtp.com',
 ];
 
 app.use(
