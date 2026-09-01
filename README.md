@@ -1,14 +1,12 @@
-# NewsExplorer API
+# NewsExplorer Backend
 
 REST API for the NewsExplorer full-stack application. It provides authentication, saved-article storage, validation, error handling, logging, and production security.
 
 ## Project links
 
 - **API:** [NewsExplorer API](https://api.tito-wtwr.crabdance.com/news-explorer)
-- **Frontend:** [NewsExplorer](https://newsexplorer.pages.dev)
-- **Repository:** [news-explorer-api](https://github.com/tito1718/news-explorer-api)
-- **Development branch:** `stage-3-integration-api`
-
+- **Frontend:** [NewsExplorer](https://newsexplorer.ldtp.com)
+- **Repository:** [news-explorer-backend](https://github.com/tito1718/news-explorer-backend)
 ## Features
 
 - Secure user registration and sign-in
@@ -138,8 +136,8 @@ Unexpected internal errors receive safe public messages. MongoDB, Node.js, and s
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/tito1718/news-explorer-api.git
-cd news-explorer-api
+git clone https://github.com/tito1718/news-explorer-backend.git
+cd news-explorer-backend
 ```
 
 ### 2. Install dependencies
@@ -219,7 +217,7 @@ The API is deployed on a Google Cloud VM.
 
 Production request flow:
 
-1. The Cloudflare Pages frontend sends an HTTPS request.
+1. The NewsExplorer frontend sends an HTTPS request.
 2. Nginx receives the request on the Google Cloud VM.
 3. Nginx forwards it to the NewsExplorer API on port `3000`.
 4. The API communicates with MongoDB.
